@@ -45,11 +45,16 @@ jobs:
           git config --global user.name 'IntelBot'
           git config --global user.email 'bot@noreply.github.com'
           
-          # 提交 history.json 防止重复推送
           git add history.json
           
-          # [可选] 如果你不仅想打包下载，还想把 .md 文件直接保存到你的 GitHub 代码仓库的目录里，
-          # 请把下面这行前面的 # 号删掉：
-          # git add *.md
-          
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update history and reports" && git push)
+          # 检查是否有文件更新，如果有则提交
+          if ! git diff --staged --quiet; then
+            git commit -m "Auto-update history"
+            
+            # 【关键修复】拉取远程最新的代码并合并，防止冲突
+            git pull --rebase origin main
+            
+            git push
+          else
+            echo "没有新的情报，history.json 无需更新。"
+          fi
