@@ -6,7 +6,7 @@ on:
   workflow_dispatch:      # 允许你手动点击按钮运行
 
 permissions:
-  contents: write         # 赋予写权限，以便保存历史记录
+  contents: write         # 赋予写权限，以便保存历史记录和文件
 
 jobs:
   patrol:
@@ -21,19 +21,35 @@ jobs:
           python-version: '3.9'
           
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
         
       - name: Run Agent
         env:
           GIST_URL: ${{ secrets.GIST_URL }}
-          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}  # <-- 换成了这个！
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          # DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }} # 如果你用DeepSeek，记得把上面那行换成这行
         run: python main.py
+        
+      # --- 新增步骤：把刚才 Python 脚本生成的 .md 文件打包备份 ---
+      - name: Upload Intelligence Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: Daily-Intelligence-Reports # 下载时的压缩包名称
+          path: "*.md"                     # 抓取当前目录下所有的 .md 文件
+          if-no-files-found: ignore        # 如果这次巡逻没有新情报(没生成md文件)，则忽略不报错
         
       - name: Commit and Push History
         run: |
           git config --global user.name 'IntelBot'
           git config --global user.email 'bot@noreply.github.com'
+          
+          # 提交 history.json 防止重复推送
           git add history.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update history" && git push)
+          
+          # [可选] 如果你不仅想打包下载，还想把 .md 文件直接保存到你的 GitHub 代码仓库的目录里，
+          # 请把下面这行前面的 # 号删掉：
+          # git add *.md
+          
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update history and reports" && git push)
