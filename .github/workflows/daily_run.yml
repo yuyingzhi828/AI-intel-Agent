@@ -26,8 +26,7 @@ jobs:
       - name: Run Agent
         env:
           GIST_URL: ${{ secrets.GIST_URL }}
-          TG_TOKEN: ${{ secrets.TG_TOKEN }}
-          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}  # <-- 换成了这个！
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           # DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }} # 如果你用DeepSeek，记得把上面那行换成这行
         run: python main.py
