@@ -12,7 +12,10 @@ TG_CHAT_ID = os.environ.get("TG_CHAT_ID")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 HISTORY_FILE = "history.json"
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(
+    api_key=os.environ.get("DEEPSEEK_API_KEY"), # 记得在 GitHub Secrets 里把名字也改了
+    base_url="https://api.deepseek.com"
+)
 
 # --- 辅助函数：发送 Telegram 消息 ---
 def send_telegram(message):
