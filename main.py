@@ -34,7 +34,8 @@ def summarize_content(title, content):
     """
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini", # 使用便宜的模型
+            #model="gpt-4o-mini", # 使用便宜的模型
+            model="deepseek-chat",
             messages=[{"role": "user", "content": prompt}]
         )
         return response.choices[0].message.content
