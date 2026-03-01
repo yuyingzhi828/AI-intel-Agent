@@ -51,8 +51,8 @@ jobs:
           if ! git diff --staged --quiet; then
             git commit -m "Auto-update history"
             
-            # 【关键修复】拉取远程最新的代码并合并，防止冲突
-            git pull --rebase origin main
+            # 【终极防冲突魔法】拉取远程代码，如果别人在你运行期间修改了历史记录，强制使用本地最新的记录覆盖
+            git pull origin main --no-rebase -X ours
             
             git push
           else
